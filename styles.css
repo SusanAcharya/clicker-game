@@ -1,0 +1,206 @@
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f0f0f0;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    color: #333;
+}
+
+#main-menu, #game-screen, #victory-screen {
+    background-color: white;
+    border-radius: 10px;
+    padding: 20px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    text-align: center;
+}
+
+h1, h2 {
+    color: #4a4a4a;
+}
+
+button {
+    background-color: #4CAF50;
+    border: none;
+    color: white;
+    padding: 10px 20px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+    margin: 4px 2px;
+    cursor: pointer;
+    border-radius: 5px;
+    transition: background-color 0.3s;
+}
+
+button:hover {
+    background-color: #45a049;
+}
+
+#boss-container {
+    position: relative;
+    width: 300px;
+    height: 300px;
+    margin: 0 auto;
+}
+
+#boss-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    cursor: pointer;
+    border-radius: 50%;
+    border: 5px solid gold;
+    box-shadow: 0 0 15px rgba(255, 215, 0, 0.5);
+}
+
+#boss-health {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background-color: rgba(255, 255, 255, 0.7);
+    padding: 5px 10px;
+    border-radius: 5px;
+}
+
+#player-stats {
+    margin-top: 20px;
+}
+
+#stamina {
+    background-color: #3498db;
+    color: white;
+    padding: 5px 10px;
+    border-radius: 5px;
+    display: inline-block;
+}
+
+.powerup {
+    position: absolute;
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    cursor: pointer;
+}
+
+.powerup.double-damage {
+    background-color: #2ecc71;
+}
+
+.powerup.avoidance {
+    background-color: #e74c3c;
+}
+
+#token-counter {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background-color: gold;
+    color: #333;
+    padding: 5px 10px;
+    border-radius: 5px;
+    font-weight: bold;
+}
+
+#upgrade-screen {
+    background-color: #f9f9f9;
+    border-radius: 10px;
+    padding: 20px;
+    max-width: 500px;
+    margin: 0 auto;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+#upgrade-screen h2 {
+    color: #333;
+    text-align: center;
+    margin-bottom: 20px;
+    font-size: 24px;
+}
+
+.upgrade-item {
+    background-color: #ffffff;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    padding: 15px;
+    margin-bottom: 15px;
+    display: flex;
+    flex-direction: column;
+    transition: box-shadow 0.3s ease;
+}
+
+.upgrade-item:hover {
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.upgrade-name {
+    font-weight: bold;
+    font-size: 18px;
+    margin-bottom: 5px;
+    color: #4a4a4a;
+}
+
+.upgrade-info {
+    font-size: 14px;
+    color: #666;
+    margin-bottom: 10px;
+}
+
+.upgrade-controls {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.upgrade-controls button {
+    width: 30px;
+    height: 30px;
+    padding: 0;
+    font-size: 18px;
+    line-height: 1;
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.upgrade-controls button:hover {
+    background-color: #45a049;
+}
+
+.upgrade-controls button:disabled {
+    background-color: #cccccc;
+    cursor: not-allowed;
+}
+
+.upgrade-level {
+    margin: 0 15px;
+    font-weight: bold;
+    font-size: 18px;
+    color: #333;
+}
+
+#back-to-menu-upgrade {
+    display: block;
+    width: 100%;
+    padding: 10px;
+    background-color: #3498db;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+    margin-top: 20px;
+}
+
+#back-to-menu-upgrade:hover {
+    background-color: #2980b9;
+}
+

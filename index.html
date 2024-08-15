@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GangstaPug Game</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div id="main-menu">
+        <h1>GangstaPug Game</h1>
+        <button id="start-game">Start Game</button>
+        <button id="upgrades">Upgrades</button>
+    </div>
+
+    <div id="game-screen" style="display: none;">
+        <div id="token-counter">Tokens: 0</div>
+        <div id="level-display"></div>
+        <div id="boss-container">
+            <img id="boss-image" src="gangsta-pug.png" alt="GangstaPug">
+            <div id="boss-health"></div>
+        </div>
+        <div id="player-stats">
+            <div id="stamina"></div>
+        </div>
+        <button id="back-to-menu">Back to Menu</button>
+    </div>
+
+    <div class="container" id="upgrade-screen" style="display: none;">
+        <h2>Upgrades</h2>
+        <div class="upgrade-item">
+            <span class="upgrade-name">Tap Damage</span>
+            <span class="upgrade-info" id="tap-damage-info">Current: 1 | Next: 2</span>
+            <div class="upgrade-controls">
+                <button class="decrease-level" data-upgrade="damage">-</button>
+                <span class="upgrade-level" id="tap-damage-level">0</span>
+                <button class="increase-level" data-upgrade="damage">+</button>
+            </div>
+        </div>
+        <div class="upgrade-item">
+            <span class="upgrade-name">Stamina</span>
+            <span class="upgrade-info" id="stamina-info">Current: 100 | Next: 105</span>
+            <div class="upgrade-controls">
+                <button class="decrease-level" data-upgrade="stamina">-</button>
+                <span class="upgrade-level" id="stamina-level">0</span>
+                <button class="increase-level" data-upgrade="stamina">+</button>
+            </div>
+        </div>
+        <div class="upgrade-item">
+            <span class="upgrade-name">Double Damage Duration</span>
+            <span class="upgrade-info" id="double-damage-info">Current: 2s | Next: 2.5s</span>
+            <div class="upgrade-controls">
+                <button class="decrease-level" data-upgrade="doubleDamage">-</button>
+                <span class="upgrade-level" id="double-damage-level">0</span>
+                <button class="increase-level" data-upgrade="doubleDamage">+</button>
+            </div>
+        </div>
+        <button id="back-to-menu-upgrade">Back to Menu</button>
+    </div>
+
+    <div id="victory-screen" style="display: none;">
+        <h2>Victory!</h2>
+        <button id="next-level">Next Level</button>
+    </div>
+
+    <script src="game.js"></script>
+</body>
+</html>

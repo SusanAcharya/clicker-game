@@ -12,7 +12,8 @@ let tokens = 0;
 let lastClickPosition = { x: 0, y: 0 };
 let redZoneTimeout;
 let greenZoneInterval;
-
+let activeTouches = 0;
+let touchInterval;
 
 
 // Upgrades
@@ -47,12 +48,44 @@ document.querySelectorAll('.decrease-level').forEach(button => {
 });
 
 
-bossImage.addEventListener('click', (e) => {
-    lastClickPosition.x = e.clientX;
-    lastClickPosition.y = e.clientY;
-    attackBoss();
+// Replace the existing click event listener with touch events
+bossImage.addEventListener('touchstart', handleTouchStart, false);
+bossImage.addEventListener('touchend', handleTouchEnd, false);
+bossImage.addEventListener('touchcancel', handleTouchEnd, false);
 
-});
+function handleTouchStart(event) {
+    event.preventDefault(); // Prevent default touch behavior
+    activeTouches = event.touches.length;
+    
+    // Start continuous attacks while touching
+    if (!touchInterval) {
+        touchInterval = setInterval(multiTouchAttack, 100); // Attack every 100ms
+    }
+    
+    // Update last click position (use the first touch point)
+    if (event.touches.length > 0) {
+        const touch = event.touches[0];
+        lastClickPosition.x = touch.clientX;
+        lastClickPosition.y = touch.clientY;
+    }
+}
+
+function handleTouchEnd(event) {
+    event.preventDefault(); // Prevent default touch behavior
+    activeTouches = event.touches.length;
+    
+    // Stop attacks if no touches remain
+    if (activeTouches === 0) {
+        clearInterval(touchInterval);
+        touchInterval = null;
+    }
+}
+
+function multiTouchAttack() {
+    for (let i = 0; i < activeTouches; i++) {
+        attackBoss();
+    }
+}
 
 function startGame() {
     mainMenu.style.display = 'none';
@@ -87,8 +120,6 @@ function updateDisplay() {
     document.getElementById('double-damage-level').textContent = doubleDamageDurationLevel;
 }
 
-
-
 function attackBoss() {
     if (playerStamina > 0) {
         let damage = doubleDamageActive ? tapDamage * 2 : tapDamage;
@@ -99,9 +130,14 @@ function attackBoss() {
         if (bossHealth <= 0) {
             bossHealth = 0;
             showVictoryScreen();
+            clearInterval(touchInterval); // Stop attacks when boss is defeated
+            touchInterval = null;
         }
         
         updateDisplay();
+    } else {
+        clearInterval(touchInterval); // Stop attacks when out of stamina
+        touchInterval = null;
     }
 }
 

@@ -12,9 +12,7 @@ let tokens = 0;
 let lastClickPosition = { x: 0, y: 0 };
 let redZoneTimeout;
 let greenZoneInterval;
-let activeTouches = new Set();
-let lastTapTime = 0;
-const tapCooldown = 100;
+
 
 
 // Upgrades
@@ -48,15 +46,12 @@ document.querySelectorAll('.decrease-level').forEach(button => {
     button.addEventListener('click', () => upgradestat(button.dataset.upgrade, -1));
 });
 
-bossImage.addEventListener('touchstart', handleTouchStart, false);
-bossImage.addEventListener('touchend', handleTouchEnd, false);
-bossImage.addEventListener('touchcancel', handleTouchEnd, false);
-
 
 bossImage.addEventListener('click', (e) => {
     lastClickPosition.x = e.clientX;
     lastClickPosition.y = e.clientY;
     attackBoss();
+
 });
 
 function startGame() {
@@ -95,14 +90,10 @@ function updateDisplay() {
 
 
 function attackBoss() {
-    const now = Date.now();
-    if (now - lastTapTime < tapCooldown) return;
-    lastTapTime = now;
-
     if (playerStamina > 0) {
-        let damage = (doubleDamageActive ? tapDamage * 2 : tapDamage) * activeTouches.size;
+        let damage = doubleDamageActive ? tapDamage * 2 : tapDamage;
         bossHealth -= damage;
-        playerStamina -= activeTouches.size;
+        playerStamina--;
         tokens += damage;
         
         if (bossHealth <= 0) {
@@ -217,30 +208,6 @@ function startPowerupGeneration() {
 function scheduleRedZone() {
     const delay = Math.random() * 3000 + 1000; // Random delay between 2-5 seconds
     redZoneTimeout = setTimeout(createRedZone, delay);
-}
-
-function handleTouchStart(e) {
-    e.preventDefault(); // Prevent default touch behavior
-    const touches = e.changedTouches;
-    for (let i = 0; i < touches.length; i++) {
-        const touch = touches[i];
-        activeTouches.add(touch.identifier);
-        attackBoss();
-        
-        // Update last click position (use the first touch for simplicity)
-        if (i === 0) {
-            lastClickPosition.x = touch.clientX;
-            lastClickPosition.y = touch.clientY;
-        }
-    }
-}
-
-function handleTouchEnd(e) {
-    e.preventDefault(); // Prevent default touch behavior
-    const touches = e.changedTouches;
-    for (let i = 0; i < touches.length; i++) {
-        activeTouches.delete(touches[i].identifier);
-    }
 }
 
 function createRedZone() {

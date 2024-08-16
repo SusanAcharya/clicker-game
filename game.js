@@ -112,8 +112,8 @@ function updateDisplay() {
 
 function attackBoss(attacks = 1) {
     if (playerStamina >= attacks) {
-        let damage = doubleDamageActive ? tapDamage * 2 : tapDamage;
-        let totalDamage = damage * attacks;
+        let damagePerAttack = doubleDamageActive ? tapDamage * 2 : tapDamage;
+        let totalDamage = damagePerAttack * attacks;
         
         bossHealth -= totalDamage;
         playerStamina -= attacks;

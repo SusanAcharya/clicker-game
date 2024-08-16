@@ -1,3 +1,9 @@
+* {
+    -webkit-tap-highlight-color: transparent;
+    -webkit-touch-callout: none;
+    touch-action: manipulation;
+}
+
 body {
     font-family: Arial, sans-serif;
     background-color: #f0f0f0;

@@ -47,12 +47,35 @@ document.querySelectorAll('.decrease-level').forEach(button => {
 });
 
 
-bossImage.addEventListener('click', (e) => {
+bossImage.addEventListener('mousedown', (e) => {
     lastClickPosition.x = e.clientX;
     lastClickPosition.y = e.clientY;
-    attackBoss();
-
+    attackBoss(1);
 });
+
+bossImage.addEventListener('touchstart', handleTouchStart, false);
+bossImage.addEventListener('touchend', handleTouchEnd, false);
+bossImage.addEventListener('touchcancel', handleTouchEnd, false);
+
+let touchCount = 0;
+
+function handleTouchStart(e) {
+    e.preventDefault(); // Prevent default touch behavior
+    touchCount = e.touches.length;
+    
+    // Use the first touch point for the last click position
+    if (touchCount > 0) {
+        lastClickPosition.x = e.touches[0].clientX;
+        lastClickPosition.y = e.touches[0].clientY;
+    }
+    
+    attackBoss(touchCount);
+}
+
+function handleTouchEnd(e) {
+    e.preventDefault(); // Prevent default touch behavior
+    touchCount = 0;
+}
 
 function startGame() {
     mainMenu.style.display = 'none';
@@ -87,14 +110,14 @@ function updateDisplay() {
     document.getElementById('double-damage-level').textContent = doubleDamageDurationLevel;
 }
 
-
-
-function attackBoss() {
-    if (playerStamina > 0) {
+function attackBoss(attacks = 1) {
+    if (playerStamina >= attacks) {
         let damage = doubleDamageActive ? tapDamage * 2 : tapDamage;
-        bossHealth -= damage;
-        playerStamina--;
-        tokens += damage;
+        let totalDamage = damage * attacks;
+        
+        bossHealth -= totalDamage;
+        playerStamina -= attacks;
+        tokens += totalDamage;
         
         if (bossHealth <= 0) {
             bossHealth = 0;

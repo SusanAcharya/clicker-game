@@ -59,22 +59,30 @@ bossImage.addEventListener('touchcancel', handleTouchEnd, false);
 
 let touchCount = 0;
 
+let activeFingers = new Set();
+
 function handleTouchStart(e) {
-    e.preventDefault(); // Prevent default touch behavior
-    touchCount = e.touches.length;
+    e.preventDefault();
+    
+    for (let touch of e.changedTouches) {
+        activeFingers.add(touch.identifier);
+    }
     
     // Use the first touch point for the last click position
-    if (touchCount > 0) {
+    if (e.touches.length > 0) {
         lastClickPosition.x = e.touches[0].clientX;
         lastClickPosition.y = e.touches[0].clientY;
     }
     
-    attackBoss(touchCount);
+    attackBoss(activeFingers.size);
 }
 
 function handleTouchEnd(e) {
-    e.preventDefault(); // Prevent default touch behavior
-    touchCount = 0;
+    e.preventDefault();
+    
+    for (let touch of e.changedTouches) {
+        activeFingers.delete(touch.identifier);
+    }
 }
 
 function startGame() {
@@ -110,13 +118,16 @@ function updateDisplay() {
     document.getElementById('double-damage-level').textContent = doubleDamageDurationLevel;
 }
 
-function attackBoss(attacks = 1) {
-    if (playerStamina >= attacks) {
-        let damagePerAttack = doubleDamageActive ? tapDamage * 2 : tapDamage;
-        let totalDamage = damagePerAttack * attacks;
+function attackBoss(fingerCount = 1) {
+    if (playerStamina >= fingerCount) {
+        let totalDamage = tapDamage * fingerCount;
+        
+        if (doubleDamageActive) {
+            totalDamage *= 2;
+        }
         
         bossHealth -= totalDamage;
-        playerStamina -= attacks;
+        playerStamina -= fingerCount;
         tokens += totalDamage;
         
         if (bossHealth <= 0) {

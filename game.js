@@ -1,5 +1,3 @@
-//multi-touch ni haleko claude bata help wala paxi, yet to check implementation
-
 // Game state
 let currentLevel = 1;
 const maxLevel = 5;

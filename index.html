@@ -7,17 +7,88 @@
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
+
+   <div id="rewards-section">
+  <div class="collapsible-menu">
+    <h3 class="menu-header">Challenges</h3>
+    <div class="menu-content">
+     <div class="reward-card">Download Hana Wallet for 500000 tokens</div>
+      <div class="reward-card">Follow our Twitter handle for 5000 tokens</div>
+      <div class="reward-card">Watch this video for 2500 tokens</div>
+      <div class="reward-card">Join our discord for 10000 tokens</div>
+    </div>
+  </div>
+  
+  <div class="collapsible-menu">
+    <h3 class="menu-header">Daily Rewards</h3>
+    <div class="menu-content">
+      <button id="daily-rewards-btn">Claim Daily Reward</button>
+    </div>
+  </div>
+  
+  <div class="collapsible-menu">
+    <h3 class="menu-header">Streaks</h3>
+    <div class="menu-content">
+      <div id="streak-tasks">
+        <p>To continue your streak, do this:</p>
+        <div class="streak-task">Like and comment on our latest twitter post. (1000 tokens)</div>
+        <div class="streak-task">Share and subscribe to our youtube channel. (1000 tokens)</div>
+      </div>
+      <div id="streak-counter">
+        <img src="images/fire.png" alt="Streak" />
+        <span id="streak-days">x1</span>
+      </div>
+    </div>
+  </div>
+  <div class="collapsible-menu">
+    <h3 class="menu-header">Referrals</h3>
+    <div class="menu-content">
+      <div id="referral-code-section">
+        <p>Your Referral Code:</p>
+        <input type="text" id="referral-code" readonly>
+        <button id="copy-referral">Copy</button>
+      </div>
+      <div id="referral-rewards">
+        <h4>Referral Rewards:</h4>
+        <ul>
+          <li>Invite 1 friend = 5000 tokens</li>
+          <li>Invite 3 friends = 10000 tokens</li>
+          <li>Invite 5 friends = 50000 tokens</li>
+          <li>Invite 10 friends = 100000 tokens</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+</div>
+
+
+
     <div id="main-menu">
         <h1>GangstaPug Game</h1>
         <button id="start-game">Start Game</button>
         <button id="upgrades">Upgrades</button>
+        <button id="boosters">Boosters</button>
     </div>
+
+    <div id="level-selection-screen" style="display: none;">
+        <h2>Select Level</h2>
+        <div id="level-path"></div>
+        <button id="back-to-menu-levels">Back to Main Menu</button>
+      </div>
+
+      <div id="boosters-shop" style="display: none;">
+        <h2>Boosters Shop</h2>
+        <div id="boosters-list"></div>
+        <button id="back-to-menu-boosters">Back to Main Menu</button>
+    </div>
+
 
     <div id="game-screen" style="display: none;">
         <div id="token-counter">Tokens: 0</div>
         <div id="level-display"></div>
         <div id="boss-container">
-            <img id="boss-image" src="gangsta-pug.png" alt="GangstaPug">
+            <img id="boss-image" src="images/gangsta-pug.png" alt="GangstaPug">
             <div id="boss-health"></div>
         </div>
         <div id="player-stats">

@@ -12,6 +12,13 @@ let tokens = 0;
 let lastClickPosition = { x: 0, y: 0 };
 let redZoneTimeout;
 let greenZoneInterval;
+let streakDays = 1;
+let lastDailyRewardClaim = null;
+let highestUnlockedLevel = 1;
+let referralCode = '';
+let cartelLevel = 0;
+let weaponsShopLevel = 0;
+let lastBoosterUpdate = Date.now();
 
 
 
@@ -47,46 +54,87 @@ document.querySelectorAll('.decrease-level').forEach(button => {
 });
 
 
-bossImage.addEventListener('mousedown', (e) => {
+bossImage.addEventListener('click', (e) => {
     lastClickPosition.x = e.clientX;
     lastClickPosition.y = e.clientY;
-    attackBoss(1);
+    attackBoss();
+
 });
 
-bossImage.addEventListener('touchstart', handleTouchStart, false);
-bossImage.addEventListener('touchend', handleTouchEnd, false);
-bossImage.addEventListener('touchcancel', handleTouchEnd, false);
-
-let touchCount = 0;
-
-let activeFingers = new Set();
-
-function handleTouchStart(e) {
-    e.preventDefault();
+function showDailyRewards() {
+    const daysRewards = [50, 100, 500, 1000, 1500, 2000, 2500, 3000, 3500, 4000, 4500, 5000, 
+                         5500, 6000, 6500, 7000, 7500, 8000, 8500, 9000, 9500, 10000, 
+                         10500, 11000, 11500, 12000, 12500, 13000, 13500, 14000];
     
-    for (let touch of e.changedTouches) {
-        activeFingers.add(touch.identifier);
+    const today = new Date().toDateString();
+    if (lastDailyRewardClaim !== today) {
+      const reward = daysRewards[Math.min(streakDays - 1, daysRewards.length - 1)];
+      tokens += reward;
+      alert(`You've claimed your daily reward of ${reward} tokens!`);
+      lastDailyRewardClaim = today;
+      streakDays++;
+      updateDisplay();
+    } else {
+      alert("You've already claimed your daily reward today. Come back tomorrow!");
     }
-    
-    // Use the first touch point for the last click position
-    if (e.touches.length > 0) {
-        lastClickPosition.x = e.touches[0].clientX;
-        lastClickPosition.y = e.touches[0].clientY;
-    }
-    
-    attackBoss(activeFingers.size);
-}
+  }
+  
+  // Add event listeners for the new elements
+  document.querySelectorAll('.reward-card').forEach(card => {
+    card.addEventListener('click', () => {
+      alert("This feature is not implemented yet. Coming soon!");
+    });
+  });
+  
+  document.getElementById('daily-rewards-btn').addEventListener('click', showDailyRewards);
+  document.getElementById('back-to-menu-levels').addEventListener('click', showMainMenu);
 
-function handleTouchEnd(e) {
-    e.preventDefault();
-    
-    for (let touch of e.changedTouches) {
-        activeFingers.delete(touch.identifier);
-    }
-}
+  
+  document.querySelectorAll('.streak-task').forEach(task => {
+    task.addEventListener('click', () => {
+      alert("This feature is not implemented yet. Coming soon!");
+    });
+  });
 
-function startGame() {
+  function startGame() {
     mainMenu.style.display = 'none';
+    showLevelSelection();
+    setupReferralCode();
+
+}
+
+function showLevelSelection() {
+    const levelSelectionScreen = document.getElementById('level-selection-screen');
+    levelSelectionScreen.style.display = 'block';
+    const levelPath = document.getElementById('level-path');
+    levelPath.innerHTML = ''; // Clear existing content
+
+    for (let i = 1; i <= maxLevel; i++) {
+        if (i > 1) {
+            const connector = document.createElement('div');
+            connector.className = 'level-connector';
+            levelPath.appendChild(connector);
+        }
+
+        const levelNode = document.createElement('div');
+        levelNode.className = `level-node ${i <= highestUnlockedLevel ? 'unlocked' : 'locked'}`;
+        levelNode.textContent = i;
+        levelNode.addEventListener('click', () => selectLevel(i));
+        levelPath.appendChild(levelNode);
+    }
+}
+
+function selectLevel(level) {
+    if (level <= highestUnlockedLevel) {
+        currentLevel = level;
+        document.getElementById('level-selection-screen').style.display = 'none';
+        startBossBattle();
+    } else {
+        alert('This level is locked. Complete the previous levels to unlock it.');
+    }
+}
+
+function startBossBattle() {
     gameScreen.style.display = 'block';
     resetGameState();
     updateDisplay();
@@ -98,6 +146,7 @@ function showMainMenu() {
     gameScreen.style.display = 'none';
     upgradeScreen.style.display = 'none';
     victoryScreen.style.display = 'none';
+    document.getElementById('level-selection-screen').style.display = 'none';
 }
 
 function resetGameState() {
@@ -116,19 +165,80 @@ function updateDisplay() {
     document.getElementById('tap-damage-level').textContent = tapDamageLevel;
     document.getElementById('stamina-level').textContent = staminaLevel;
     document.getElementById('double-damage-level').textContent = doubleDamageDurationLevel;
+    document.getElementById('streak-days').textContent = `x${streakDays}`;
+    updateBoosterTokens();
+    tokenCounter.textContent = `Tokens: ${Math.floor(tokens)}`;
 }
 
-function attackBoss(fingerCount = 1) {
-    if (playerStamina >= fingerCount) {
-        let totalDamage = tapDamage * fingerCount;
-        
-        if (doubleDamageActive) {
-            totalDamage *= 2;
-        }
-        
-        bossHealth -= totalDamage;
-        playerStamina -= fingerCount;
-        tokens += totalDamage;
+// Add these event listeners
+document.getElementById('boosters').addEventListener('click', showBoostersShop);
+document.getElementById('back-to-menu-boosters').addEventListener('click', showMainMenu);
+
+// Modify your showMainMenu function to hide the boosters shop
+function showMainMenu() {
+    mainMenu.style.display = 'block';
+    gameScreen.style.display = 'none';
+    upgradeScreen.style.display = 'none';
+    victoryScreen.style.display = 'none';
+    document.getElementById('level-selection-screen').style.display = 'none';
+    document.getElementById('boosters-shop').style.display = 'none';
+}
+
+// Call updateBoosterTokens periodically
+setInterval(updateBoosterTokens, 60000);
+
+function showDailyRewards() {
+    const daysRewards = [50, 100, 500, 1000, 1500, 2000, 2500, 3000, 3500, 4000, 4500, 5000, 
+                         5500, 6000, 6500, 7000, 7500, 8000, 8500, 9000, 9500, 10000, 
+                         10500, 11000, 11500, 12000, 12500, 13000, 13500, 14000];
+    
+    const today = new Date().toDateString();
+    if (lastDailyRewardClaim !== today) {
+      const reward = daysRewards[Math.min(streakDays - 1, daysRewards.length - 1)];
+      tokens += reward;
+      alert(`You've claimed your daily reward of ${reward} tokens!`);
+      lastDailyRewardClaim = today;
+      streakDays++;
+      updateDisplay();
+    } else {
+      alert("You've already claimed your daily reward today. Come back tomorrow!");
+    }
+  }
+
+  document.querySelectorAll('.reward-card').forEach(card => {
+    card.addEventListener('click', () => {
+      alert("This feature is not implemented yet. Coming soon!");
+    });
+  });
+  
+  document.getElementById('daily-rewards-btn').addEventListener('click', showDailyRewards);
+  
+  document.querySelectorAll('.streak-task').forEach(task => {
+    task.addEventListener('click', () => {
+      alert("This feature is not implemented yet. Coming soon!");
+    });
+  });
+  
+  // Add this function to handle collapsible menus
+  function toggleMenu(header) {
+    const content = header.nextElementSibling;
+    content.classList.toggle('active');
+  }
+  
+  // Add event listeners for menu headers
+  document.querySelectorAll('.menu-header').forEach(header => {
+    header.addEventListener('click', () => toggleMenu(header));
+  });
+
+  document.getElementById('streak-days').textContent = `x${streakDays}`;
+
+
+function attackBoss() {
+    if (playerStamina > 0) {
+        let damage = doubleDamageActive ? tapDamage * 2 : tapDamage;
+        bossHealth -= damage;
+        playerStamina--;
+        tokens += damage;
         
         if (bossHealth <= 0) {
             bossHealth = 0;
@@ -150,11 +260,95 @@ function showVictoryScreen() {
     document.getElementById('next-level').addEventListener('click', nextLevel);
 }
 
+
+// Add this function to show the boosters shop
+function showBoostersShop() {
+    mainMenu.style.display = 'none';
+    document.getElementById('boosters-shop').style.display = 'block';
+    updateBoostersDisplay();
+}
+
+function updateBoostersDisplay() {
+    const boostersList = document.getElementById('boosters-list');
+    boostersList.innerHTML = '';
+
+    const boosters = [
+        {
+            name: 'Cartel System',
+            description: 'Start your own cartel and hire gangsters. Earns tokens per hour.',
+            level: cartelLevel,
+            tokensPerHour: 100 * (cartelLevel + 1),
+            upgradeCost: 1000 * (cartelLevel + 1),
+            image: 'images/cartel-system.png',
+            upgrade: () => {
+                if (tokens >= 1000 * (cartelLevel + 1)) {
+                    tokens -= 1000 * (cartelLevel + 1);
+                    cartelLevel++;
+                    updateBoostersDisplay();
+                    updateDisplay();
+                } else {
+                    alert('Not enough tokens to upgrade!');
+                }
+            }
+        },
+        {
+            name: 'Weapons Shop',
+            description: 'Start your weapons shop. Upgrade to unlock more powerful weapons.',
+            level: weaponsShopLevel,
+            tokensPerHour: 250 * (weaponsShopLevel + 1),
+            upgradeCost: 2500 * (weaponsShopLevel + 1),
+            image: 'images/weapon-shop.png',
+            upgrade: () => {
+                if (tokens >= 2500 * (weaponsShopLevel + 1)) {
+                    tokens -= 2500 * (weaponsShopLevel + 1);
+                    weaponsShopLevel++;
+                    updateBoostersDisplay();
+                    updateDisplay();
+                } else {
+                    alert('Not enough tokens to upgrade!');
+                }
+            }
+        }
+    ];
+
+    boosters.forEach(booster => {
+        const boosterCard = document.createElement('div');
+        boosterCard.className = 'booster-card';
+        boosterCard.innerHTML = `
+            <div class="booster-info">
+                <h3>${booster.name}</h3>
+                <p>${booster.description}</p>
+                <p>Level: ${booster.level}</p>
+                <p>Earning: ${booster.tokensPerHour} tokens/hr</p>
+                <button>Upgrade (${booster.upgradeCost} tokens)</button>
+            </div>
+            <img src="${booster.image}" alt="${booster.name}" class="booster-image">
+        `;
+        boosterCard.querySelector('button').addEventListener('click', booster.upgrade);
+        boostersList.appendChild(boosterCard);
+    });
+}
+
+// Add this function to update tokens from boosters
+function updateBoosterTokens() {
+    const now = Date.now();
+    const elapsedHours = (now - lastBoosterUpdate) / (1000 * 60 * 60);
+    const cartelTokens = Math.floor(100 * (cartelLevel + 1) * elapsedHours);
+    const weaponsShopTokens = Math.floor(250 * (weaponsShopLevel + 1) * elapsedHours);
+    tokens += cartelTokens + weaponsShopTokens;
+    lastBoosterUpdate = now;
+}
+
 function nextLevel() {
     if (currentLevel < maxLevel) {
         currentLevel++;
+        if (currentLevel > highestUnlockedLevel) {
+            highestUnlockedLevel = currentLevel;
+        }
         document.getElementById('victory-message').remove();
-        startGame();
+        resetGameState();
+        updateDisplay();
+        startPowerupGeneration();
     } else {
         alert('Congratulations! You have completed all levels!');
         currentLevel = 1;
@@ -162,6 +356,37 @@ function nextLevel() {
         showMainMenu();
     }
 }
+
+function generateReferralCode() {
+    const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+    let result = '';
+    for (let i = 0; i < 8; i++) {
+      result += characters.charAt(Math.floor(Math.random() * characters.length));
+    }
+    return result;
+  }
+  
+  // Add this function to set up the referral code
+  function setupReferralCode() {
+    if (!referralCode) {
+      referralCode = generateReferralCode();
+    }
+    document.getElementById('referral-code').value = referralCode;
+  }
+  
+  // Add this function to copy the referral code
+  function copyReferralCode() {
+    const codeInput = document.getElementById('referral-code');
+    codeInput.select();
+    document.execCommand('copy');
+    alert('Referral code copied to clipboard!');
+  }
+  
+  // Add these event listeners
+  document.addEventListener('DOMContentLoaded', () => {
+    setupReferralCode();
+    document.getElementById('copy-referral').addEventListener('click', copyReferralCode);
+  });
 
 function updateUpgradeInfo() {
     document.getElementById('tap-damage-info').textContent = `Current: ${tapDamage} | Next: ${tapDamage + 1}`;

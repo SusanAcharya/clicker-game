@@ -1,3 +1,5 @@
+//multi-touch ni haleko claude bata help wala paxi, yet to check implementation
+
 // Game state
 let currentLevel = 1;
 const maxLevel = 5;
@@ -54,12 +56,39 @@ document.querySelectorAll('.decrease-level').forEach(button => {
 });
 
 
-bossImage.addEventListener('click', (e) => {
-    lastClickPosition.x = e.clientX;
-    lastClickPosition.y = e.clientY;
-    attackBoss();
+bossImage.addEventListener('touchstart', handleTouchStart, false);
+bossImage.addEventListener('touchend', handleTouchEnd, false);
+bossImage.addEventListener('touchcancel', handleTouchEnd, false);
 
-});
+let activeTouches = 0;
+
+function handleTouchStart(e) {
+    e.preventDefault(); // Prevent default touch behavior
+    activeTouches = e.touches.length;
+    attackBossMultiTouch();
+}
+
+function handleTouchEnd(e) {
+    activeTouches = e.touches.length;
+}
+
+function attackBossMultiTouch() {
+    if (playerStamina > 0) {
+        let damage = doubleDamageActive ? tapDamage * 2 : tapDamage;
+        damage *= activeTouches; // Multiply damage by number of active touches
+        bossHealth -= damage;
+        playerStamina -= activeTouches; // Decrease stamina based on number of touches
+        tokens += damage;
+        
+        if (bossHealth <= 0) {
+            bossHealth = 0;
+            showVictoryScreen();
+        }
+        
+        updateDisplay();
+    }
+}
+
 
 function showDailyRewards() {
     const daysRewards = [50, 100, 500, 1000, 1500, 2000, 2500, 3000, 3500, 4000, 4500, 5000, 
@@ -233,21 +262,28 @@ function showDailyRewards() {
   document.getElementById('streak-days').textContent = `x${streakDays}`;
 
 
-function attackBoss() {
-    if (playerStamina > 0) {
-        let damage = doubleDamageActive ? tapDamage * 2 : tapDamage;
-        bossHealth -= damage;
-        playerStamina--;
-        tokens += damage;
-        
-        if (bossHealth <= 0) {
-            bossHealth = 0;
-            showVictoryScreen();
+  function attackBoss(e) {
+    if (e.type === 'click') {
+        lastClickPosition.x = e.clientX;
+        lastClickPosition.y = e.clientY;
+        if (playerStamina > 0) {
+            let damage = doubleDamageActive ? tapDamage * 2 : tapDamage;
+            bossHealth -= damage;
+            playerStamina--;
+            tokens += damage;
+            
+            if (bossHealth <= 0) {
+                bossHealth = 0;
+                showVictoryScreen();
+            }
+            
+            updateDisplay();
         }
-        
-        updateDisplay();
     }
 }
+
+bossImage.addEventListener('click', attackBoss);
+
 
 function showVictoryScreen() {
     const victoryMessage = document.createElement('div');

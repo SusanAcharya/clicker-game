@@ -1,3 +1,5 @@
+//multi-touch ni haleko claude bata help wala paxi, yet to check implementation
+
 // Game state
 let currentLevel = 1;
 const maxLevel = 5;
@@ -84,21 +86,31 @@ function handleTouchStart(e) {
     attackBossMultiTouch();
 }
 
+
 function handleTouchEnd(e) {
     activeTouches = e.touches.length;
+    if (activeTouches === 0) {
+        // Reset damage calculation when all touches end
+        playerStamina = Math.max(0, playerStamina);
+    }
 }
+
+// Add this new event listener
+bossContainer.addEventListener('touchmove', (e) => {
+    activeTouches = e.touches.length;
+});
 
 function attackBossMultiTouch() {
     if (playerStamina > 0) {
-        let damage = tapDamage * activeTouches; // Multiply base damage by number of active touches
+        let damage = tapDamage * activeTouches;
         if (doubleDamageActive) {
-            damage *= 2; // Apply double damage after calculating multi-touch damage
+            damage *= 2;
         }
         bossHealth -= damage;
-        playerStamina -= activeTouches; // Decrease stamina based on number of touches
+        playerStamina -= activeTouches;
         tokens += damage;
         
-        if (bossHealth <= 0) {
+        if (bossHealth <= 0 && !document.getElementById('victory-message')) {
             bossHealth = 0;
             showVictoryScreen();
         }
@@ -313,7 +325,7 @@ function showDailyRewards() {
             playerStamina--;
             tokens += damage;
             
-            if (bossHealth <= 0) {
+            if (bossHealth <= 0 && !document.getElementById('victory-message')) {
                 bossHealth = 0;
                 showVictoryScreen();
             }
@@ -558,8 +570,8 @@ function createRedZone() {
     const redZone = document.createElement('div');
     redZone.className = 'powerup avoidance';
     redZone.style.position = 'absolute';
-    redZone.style.left = `${lastClickPosition.x - bossImage.getBoundingClientRect().left}px`;
-    redZone.style.top = `${lastClickPosition.y - bossImage.getBoundingClientRect().top}px`;
+    redZone.style.left = `${Math.random() * 80 + 10}%`;
+    redZone.style.top = `${Math.random() * 80 + 10}%`;
     redZone.style.width = '30px';
     redZone.style.height = '30px';
     redZone.style.borderRadius = '50%';

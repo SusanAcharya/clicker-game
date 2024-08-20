@@ -1,5 +1,3 @@
-//multi-touch ni haleko claude bata help wala paxi, yet to check implementation
-
 // Game state
 let currentLevel = 1;
 const maxLevel = 5;
@@ -92,8 +90,10 @@ function handleTouchEnd(e) {
 
 function attackBossMultiTouch() {
     if (playerStamina > 0) {
-        let damage = doubleDamageActive ? tapDamage * 2 : tapDamage;
-        damage *= activeTouches; // Multiply damage by number of active touches
+        let damage = tapDamage * activeTouches; // Multiply base damage by number of active touches
+        if (doubleDamageActive) {
+            damage *= 2; // Apply double damage after calculating multi-touch damage
+        }
         bossHealth -= damage;
         playerStamina -= activeTouches; // Decrease stamina based on number of touches
         tokens += damage;
@@ -327,6 +327,11 @@ bossImage.addEventListener('click', attackBoss);
 
 
 function showVictoryScreen() {
+    const existingMessage = document.getElementById('victory-message');
+    if (existingMessage) {
+        existingMessage.remove();
+    }
+
     const victoryMessage = document.createElement('div');
     victoryMessage.id = 'victory-message';
     victoryMessage.innerHTML = `

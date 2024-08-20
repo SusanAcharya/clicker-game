@@ -39,12 +39,16 @@ const bossHealthDisplay = document.getElementById('boss-health');
 const staminaDisplay = document.getElementById('stamina');
 const tokenCounter = document.getElementById('token-counter');
 const levelDisplay = document.getElementById('level-display');
+const rewardsSection = document.getElementById('rewards-section');
+const bossContainer = document.getElementById('boss-container');
+
+
 
 // Event listeners
 document.getElementById('start-game').addEventListener('click', startGame);
 document.getElementById('upgrades').addEventListener('click', showUpgrades);
-document.getElementById('back-to-menu').addEventListener('click', showMainMenu);
-document.getElementById('back-to-menu-upgrade').addEventListener('click', showMainMenu);
+document.getElementById('back-to-menu').addEventListener('click', backToMainMenu);
+document.getElementById('back-to-menu-upgrade').addEventListener('click', backToMainMenu);
 document.getElementById('next-level').addEventListener('click', nextLevel);
 
 document.querySelectorAll('.increase-level').forEach(button => {
@@ -55,16 +59,30 @@ document.querySelectorAll('.decrease-level').forEach(button => {
     button.addEventListener('click', () => upgradestat(button.dataset.upgrade, -1));
 });
 
+bossContainer.addEventListener('touchstart', handleTouchStart, false);
+bossContainer.addEventListener('touchend', handleTouchEnd, false);
+bossContainer.addEventListener('touchcancel', handleTouchEnd, false);
 
-bossImage.addEventListener('touchstart', handleTouchStart, false);
-bossImage.addEventListener('touchend', handleTouchEnd, false);
-bossImage.addEventListener('touchcancel', handleTouchEnd, false);
+bossContainer.addEventListener('click', (e) => {
+    const rect = bossContainer.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const y = e.clientY - rect.top;
+    createTapEffect(x, y);
+    attackBoss(e);
+});
 
 let activeTouches = 0;
 
 function handleTouchStart(e) {
-    e.preventDefault(); // Prevent default touch behavior
+    e.preventDefault();
     activeTouches = e.touches.length;
+    for (let i = 0; i < e.touches.length; i++) {
+        const touch = e.touches[i];
+        const rect = bossContainer.getBoundingClientRect();
+        const x = touch.clientX - rect.left;
+        const y = touch.clientY - rect.top;
+        createTapEffect(x, y);
+    }
     attackBossMultiTouch();
 }
 
@@ -87,6 +105,23 @@ function attackBossMultiTouch() {
         
         updateDisplay();
     }
+}
+
+function showRewardsSection() {
+    document.getElementById('rewards-section').style.display = 'block';
+}
+
+function hideRewardsSection() {
+    document.getElementById('rewards-section').style.display = 'none';
+}
+
+function createTapEffect(x, y) {
+    const effect = document.createElement('div');
+    effect.className = 'tap-effect';
+    effect.style.left = `${x}px`;
+    effect.style.top = `${y}px`;
+    bossContainer.appendChild(effect);
+    setTimeout(() => effect.remove(), 300);
 }
 
 
@@ -114,11 +149,15 @@ function showDailyRewards() {
       alert("This feature is not implemented yet. Coming soon!");
     });
   });
+
+  function backToMainMenu() {
+    showMainMenu();
+    showRewardsSection(); // Explicitly show rewards section
+}
   
   document.getElementById('daily-rewards-btn').addEventListener('click', showDailyRewards);
-  document.getElementById('back-to-menu-levels').addEventListener('click', showMainMenu);
+  document.getElementById('back-to-menu-levels').addEventListener('click', backToMainMenu);
 
-  
   document.querySelectorAll('.streak-task').forEach(task => {
     task.addEventListener('click', () => {
       alert("This feature is not implemented yet. Coming soon!");
@@ -129,7 +168,7 @@ function showDailyRewards() {
     mainMenu.style.display = 'none';
     showLevelSelection();
     setupReferralCode();
-
+    hideRewardsSection(); // Hide rewards section when starting the game
 }
 
 function showLevelSelection() {
@@ -176,6 +215,8 @@ function showMainMenu() {
     upgradeScreen.style.display = 'none';
     victoryScreen.style.display = 'none';
     document.getElementById('level-selection-screen').style.display = 'none';
+    document.getElementById('boosters-shop').style.display = 'none';
+    showRewardsSection(); // Show rewards section when returning to main menu
 }
 
 function resetGameState() {
@@ -201,7 +242,7 @@ function updateDisplay() {
 
 // Add these event listeners
 document.getElementById('boosters').addEventListener('click', showBoostersShop);
-document.getElementById('back-to-menu-boosters').addEventListener('click', showMainMenu);
+document.getElementById('back-to-menu-boosters').addEventListener('click', backToMainMenu);
 
 // Modify your showMainMenu function to hide the boosters shop
 function showMainMenu() {
@@ -301,6 +342,7 @@ function showVictoryScreen() {
 function showBoostersShop() {
     mainMenu.style.display = 'none';
     document.getElementById('boosters-shop').style.display = 'block';
+    hideRewardsSection(); // Hide rewards section when showing boosters shop
     updateBoostersDisplay();
 }
 
@@ -422,7 +464,8 @@ function generateReferralCode() {
   document.addEventListener('DOMContentLoaded', () => {
     setupReferralCode();
     document.getElementById('copy-referral').addEventListener('click', copyReferralCode);
-  });
+    showRewardsSection(); // Ensure rewards section is visible on initial load
+});
 
 function updateUpgradeInfo() {
     document.getElementById('tap-damage-info').textContent = `Current: ${tapDamage} | Next: ${tapDamage + 1}`;
@@ -459,6 +502,7 @@ function upgradestat(stat, change) {
 function showUpgrades() {
     mainMenu.style.display = 'none';
     upgradeScreen.style.display = 'block';
+    hideRewardsSection(); // Hide rewards section when showing upgrades
     updateDisplay();
     updateUpgradeInfo();
 }

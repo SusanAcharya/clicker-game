@@ -1,3 +1,5 @@
+//multi-touch ni haleko claude bata help wala paxi, yet to check implementation
+
 // Game state
 let currentLevel = 1;
 const maxLevel = 5;
@@ -153,12 +155,35 @@ function showDailyRewards() {
     }
   }
   
-  // Add event listeners for the new elements
-  document.querySelectorAll('.reward-card').forEach(card => {
+document.querySelectorAll('.reward-card').forEach(card => {
     card.addEventListener('click', () => {
-      alert("This feature is not implemented yet. Coming soon!");
+      const link = card.dataset.link;
+      const tokenReward = parseInt(card.dataset.tokens);
+  
+      // Open the link in a new tab
+      window.open(link, '_blank');
+  
+      // Add tokens to the counter
+      tokens += tokenReward;
+      updateDisplay();
+  
+      // Disable the card to prevent multiple claims
+      card.classList.add('claimed');
+      card.style.pointerEvents = 'none';
+      card.style.opacity = '0.5';
+  
+      alert(`You've earned ${tokenReward} tokens! The link has been opened in a new tab.`);
     });
   });
+
+function checkAllChallengesCompleted() {
+    const allChallenges = document.querySelectorAll('.reward-card');
+    const completedChallenges = document.querySelectorAll('.reward-card.claimed');
+  
+    if (allChallenges.length === completedChallenges.length) {
+      alert("Congratulations! You've completed all challenges!");
+    }
+  }
 
   function backToMainMenu() {
     showMainMenu();
@@ -248,7 +273,7 @@ function updateDisplay() {
     document.getElementById('streak-days').textContent = `x${streakDays}`;
     updateBoosterTokens();
     tokenCounter.textContent = `Tokens: ${Math.floor(tokens)}`;
-}
+    checkAllChallengesCompleted();}
 
 // Add these event listeners
 document.getElementById('boosters').addEventListener('click', showBoostersShop);
@@ -285,11 +310,6 @@ function showDailyRewards() {
     }
   }
 
-  document.querySelectorAll('.reward-card').forEach(card => {
-    card.addEventListener('click', () => {
-      alert("This feature is not implemented yet. Coming soon!");
-    });
-  });
   
   document.getElementById('daily-rewards-btn').addEventListener('click', showDailyRewards);
   

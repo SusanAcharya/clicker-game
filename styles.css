@@ -42,13 +42,19 @@ button:hover {
 }
 
 #boss-container {
-    position: relative;
+  position: relative;
+  cursor: pointer;
     width: 300px;
     height: 300px;
     margin: 0 auto;
 }
 
 #boss-image {
+  user-select: none;
+    -webkit-user-select: none;
+    -webkit-touch-callout: none;
+    -webkit-tap-highlight-color: transparent;
+    pointer-events: none;
     width: 100%;
     height: 100%;
     object-fit: cover;
@@ -267,12 +273,12 @@ button:hover {
 
   #level-path {
     display: flex;
-    flex-direction: column;
+    flex-direction: row; /* Change to row for horizontal alignment */
     align-items: center;
     padding: 20px;
-  }
-  
-  .level-node {
+}
+
+.level-node {
     width: 80px;
     height: 80px;
     border-radius: 50%;
@@ -280,29 +286,31 @@ button:hover {
     display: flex;
     justify-content: center;
     align-items: center;
-    margin: 10px 0;
+    margin: 0 10px; /* Adjust the margin for horizontal spacing */
     font-size: 24px;
     font-weight: bold;
     cursor: pointer;
     transition: background-color 0.3s;
-  }
-  
-  .level-node.unlocked {
+}
+
+.level-node.unlocked {
     background-color: #4CAF50;
     color: white;
-  }
-  
-  .level-node.locked {
+}
+
+.level-node.locked {
     background-color: #ccc;
     color: #666;
     cursor: not-allowed;
-  }
-  
-  .level-connector {
-    width: 4px;
-    height: 30px;
+}
+
+.level-connector {
+    width: 30px; /* Change width for horizontal connector */
+    height: 4px; /* Change height for horizontal connector */
     background-color: #999;
-  }
+    margin: 0; /* Remove margin as spacing is already provided */
+}
+
 
   #referral-code-section {
     margin-bottom: 10px;
@@ -350,4 +358,25 @@ button:hover {
 
 .booster-info button {
     margin-top: 10px;
+}
+
+.tap-effect {
+  position: absolute;
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  background-color: rgba(255, 255, 255, 0.5);
+  animation: tapAnimation 0.3s ease-out;
+  pointer-events: none;
+}
+
+@keyframes tapAnimation {
+    0% {
+        transform: scale(0);
+        opacity: 1;
+    }
+    100% {
+        transform: scale(2);
+        opacity: 0;
+    }
 }

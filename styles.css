@@ -273,12 +273,12 @@ button:hover {
 
   #level-path {
     display: flex;
-    flex-direction: row; /* Change to row for horizontal alignment */
+    flex-direction: column;
     align-items: center;
     padding: 20px;
-}
-
-.level-node {
+  }
+  
+  .level-node {
     width: 80px;
     height: 80px;
     border-radius: 50%;
@@ -286,12 +286,12 @@ button:hover {
     display: flex;
     justify-content: center;
     align-items: center;
-    margin: 0 10px; /* Adjust the margin for horizontal spacing */
+    margin: 10px 0;
     font-size: 24px;
     font-weight: bold;
     cursor: pointer;
     transition: background-color 0.3s;
-}
+  }
 
 .level-node.unlocked {
     background-color: #4CAF50;
@@ -305,8 +305,8 @@ button:hover {
 }
 
 .level-connector {
-    width: 30px; /* Change width for horizontal connector */
-    height: 4px; /* Change height for horizontal connector */
+    width: 5px; /* Change width for horizontal connector */
+    height: 30px; /* Change height for horizontal connector */
     background-color: #999;
     margin: 0; /* Remove margin as spacing is already provided */
 }
